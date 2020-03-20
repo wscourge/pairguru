@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :genre do
-    name { Faker::Lorem.word }
+    name { FFaker::Lorem.word }
 
     trait :with_movies do
       after(:create) do |genre|

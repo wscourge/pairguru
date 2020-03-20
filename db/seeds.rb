@@ -1,4 +1,4 @@
-require "faker"
+require "ffaker"
 
 Rails.logger = Logger.new(STDOUT)
 
@@ -76,7 +76,7 @@ if Movie.count < 100
     movie = movies.sample
     Movie.create!(
       title: movie[:title],
-      description: Faker::Lorem.paragraph(5),
+      description: FFaker::Lorem.paragraph(5),
       genre_id: genre_ids.sample,
       released_at: Date.new(movie[:release_year].to_i)
     )

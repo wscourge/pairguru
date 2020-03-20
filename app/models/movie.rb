@@ -14,4 +14,6 @@
 
 class Movie < ApplicationRecord
   belongs_to :genre
+
+  delegate :name, to: :genre, prefix: true
 end

@@ -1,15 +1,17 @@
 source "https://rubygems.org"
 
-gem "rails", "5.2"
+gem "rails", "6.0.2.2"
 
 gem "annotate"
 gem "bootstrap-sass"
 gem "devise"
+gem "dotenv-rails"
 gem "draper"
 gem "haml-rails"
+gem "httparty"
 gem "jquery-rails"
+gem "pg"
 gem "sass-rails"
-gem "sqlite3"
 gem "uglifier"
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -27,15 +29,24 @@ group :development do
 end
 
 group :development, :test do
+  gem "brakeman"
+  gem "bundler-audit"
   gem "capybara"
   gem "factory_bot_rails"
-  gem "faker"
+  gem "fasterer"
+  gem "ffaker"
   gem "listen"
+  gem "lol_dba"
+  gem "rails_best_practices"
   gem "rspec-rails"
   gem "rubocop"
-  gem "simplecov"
+  gem "rubocop-faker"
+  gem "rubocop-performance"
+  gem "rubocop-rails"
+  gem "rubocop-rspec"
 end
 
 group :test do
   gem "shoulda-matchers"
+  gem "simplecov"
 end

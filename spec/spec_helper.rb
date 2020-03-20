@@ -14,7 +14,29 @@
 #
 # The `.rspec` file also contains a few flags that are not defaults but that
 # users commonly want.
-#
+
+require "simplecov"
+
+Dir["./spec/shared_examples/**/*.rb"].sort.each { |shared_example| require shared_example }
+Dir["./spec/shared_contexts/**/*.rb"].sort.each { |shared_context| require shared_context }
+
+SimpleCov.start do
+  enable_coverage(:branch)
+  add_group("Controllers", "app/controllers")
+  add_group("Decorators", "app/decorators")
+  add_group("Helpers", "app/helpers")
+  add_group("Mailers", "app/mailers")
+  add_group("Models", "app/models")
+  add_group("Services", "app/services")
+  add_group("Validators", "app/validators")
+  add_filter(%r{^/config/})
+  add_filter(%r{^/db/})
+  add_filter(%r{^/tmp/})
+  add_filter(%r{^/spec/})
+  add_filter(%r{^/vendor/})
+  track_files("{app,lib}/**/*.rb")
+end
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
