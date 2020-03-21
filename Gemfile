@@ -9,6 +9,7 @@ gem "dotenv-rails"
 gem "draper"
 gem "haml-rails"
 gem "httparty"
+gem "jbuilder"
 gem "jquery-rails"
 gem "pg"
 gem "sass-rails"
@@ -47,6 +48,7 @@ group :development, :test do
 end
 
 group :test do
+  gem "database_cleaner"
   gem "shoulda-matchers"
   gem "simplecov"
 end

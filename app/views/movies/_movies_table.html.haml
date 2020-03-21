@@ -1,6 +1,6 @@
 %table.table.table-striped
   %tbody
-    - movies.includes([:genre]).each_with_index do |movie, i|
+    - movies.each_with_index do |movie, i|
       %tr
         %td= i + 1
         %td
