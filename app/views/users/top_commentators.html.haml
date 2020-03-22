@@ -1,0 +1,17 @@
+.row
+  .col-md-8.col-md-offset-2.col-lg-8.col-lg-offset-2
+    %h1.text-center Top last 7 days commentators
+    %ul.list-group
+      %li.list-group-item.active
+        %h4.list-group-item-heading
+          Heroes
+        %p.list-group-item-text
+          That we need, but don't deserve
+      - @commentators.each.with_index do |user, index|
+        %li.list-group-item
+          %span.badge
+            = user.comments_count
+          %h4.list-group-item-heading
+            = "#{index + 1}. #{user.name}"
+          %p.list-group-item-text
+            = user.email

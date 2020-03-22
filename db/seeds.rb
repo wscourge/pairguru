@@ -5,10 +5,10 @@ Rails.logger = Logger.new(STDOUT)
 Rails.logger.info "Creating users..."
 
 20.times do |i|
-  number = i.zero? ? "" : i + 1
-  name = "user#{number}"
-  email = "#{name}@example.com"
+  name = FFaker::Name.first_name
+  email = FFaker::Internet.email
   next if User.exists?(email: email)
+
   User.create!(
     email: email,
     name: name,
@@ -81,4 +81,25 @@ if Movie.count < 100
       released_at: Date.new(movie[:release_year].to_i)
     )
   end
+end
+
+Rails.logger.info "Creating comments..."
+
+movies_ids = [*1..100]
+users_ids = [*1..20]
+comments = []
+if Comment.count < 2000
+  users_ids.each do |user_id|
+    movies_ids.each do |movie_id|
+      timestamp = FFaker::Time.between(13.days.ago, Time.now)
+      comments << {
+        movie_id: movie_id,
+        user_id: user_id,
+        content: FFaker::CheesyLingo.sentence,
+        created_at: timestamp,
+        updated_at: timestamp
+      }
+    end
+  end
+  Comment.insert_all(comments)
 end

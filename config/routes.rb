@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   end
   resources :comments, only: [:create], defaults: { format: :js }
   delete "/comments", to: "comments#destroy", action: :destroy, defaults: { format: :js }
+  get "/top-commentators", to: "users#top_commentators"
 end

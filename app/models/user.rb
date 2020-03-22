@@ -23,5 +23,19 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
+  has_many :comments
+
   validates :phone_number, format: { with: /\A[+]?\d+(?>[- .]\d+)*\z/, allow_nil: true }
+
+  class << self
+    def top_last_7_days_commentators
+      joins(:comments)
+        .where("comments.created_at >= :start", start: 7.days.ago)
+        .where("comments.created_at <= :end", end: Time.zone.now)
+        .select(:id, :name, :email, "count(comments) as comments_count")
+        .group(:id)
+        .order(comments_count: :desc)
+        .limit(10)
+    end
+  end
 end
