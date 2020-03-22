@@ -1,0 +1,13 @@
+- commentable = movie.comments.none? { |comment| comment.user_id == user.id } ? "" : "hidden"
+= form_with(url: comments_path,
+            method: :post,
+            id: "comment-create-form-#{movie.id}-#{user.id}",
+            class: commentable,
+            data: { remote: true, movie: movie.id, user: user.id }) do |form|
+  .form-group
+    = form.label(:content, "Leave a comment")
+    = form.text_area(:content, rows: 5, class: "form-control", placeholder: "How was \"#{movie.title}\"?")
+  = form.hidden_field(:movie_id, value: movie.id)
+  = form.button(type: :submit, class: "btn btn-primary pull-right", data: { "disable-with": "Sending..." }) do
+    Send comment
+    %span.glyphicon.glyphicon-send
