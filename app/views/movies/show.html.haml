@@ -1,5 +1,12 @@
-%h1= @movie.title
 .jumbotron
-  = @movie.description
+  .row
+    .col-sm-4
+      %img.img-responsive.img-rounded{ src: @movie.poster }
+    .col-sm-8
+      %h1.mt-0
+        = @movie.title
+      = render 'shared/movie/rating', rating: @movie.rating
+      %p
+        = @movie.plot
 - if user_signed_in?
   %p= link_to 'Email me details about this movie', send_info_movie_path(@movie), class: 'btn btn-sm btn-default'

@@ -1,0 +1,156 @@
+version: 2.1
+
+executors:
+  default:
+    working_directory: ~/pairguru
+    docker:
+      - image: circleci/ruby:2.5.1-node-browsers
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_PATH: vendor/bundle
+          BUNDLE_RETRY: 3
+          BUNDLER_VERSION: 2.0.1
+          RAILS_ENV: test
+          DB_HOST: 127.0.0.1
+          PG_HOST: 127.0.0.1
+          PGUSER: pairguru
+      - image: circleci/postgres:12.0
+        environment:
+          POSTGRES_DB: pairguru_test
+          POSTGRES_USER: pairguru
+
+commands:
+  configure_bundler:
+    description: Configure bundler
+    steps:
+      - run:
+          name: Configure bundler
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+
+jobs:
+  build_and_test:
+    executor: default
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pairguru-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - pairguru-
+          paths:
+            - vendor/bundle
+      - configure_bundler
+      - run:
+          name: Install bundle
+          command: bundle install
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
+      - run:
+          name: Setup DB
+          command: bundle exec rails db:setup --trace
+      - run:
+          name: Create tmp
+          command: mkdir -p tmp && touch tmp/movies.csv
+      - run:
+          name: RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format progress
+      - store_artifacts:
+          path: coverage
+      - save_cache:
+          key: pairguru-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ./pairguru
+
+  brakeman:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: Brakeman
+          command: bundle exec brakeman --rails6 -A --no-exit-on-warn
+
+  fasterer:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: Fasterer
+          command: bundle exec fasterer
+
+  lol_dba:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: Database indexes analyzer
+          command: bundle exec rake db:find_indexes
+
+  rails_best_practices:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: Rails Best Practices
+          command: bundle exec rails_best_practices . -c config/rails_best_practices.yml
+
+  rspec:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format progress
+      - store_artifacts:
+          path: coverage
+
+  rubocop:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/
+      - configure_bundler
+      - run:
+          name: Rubocop
+          command: bundle exec rubocop
+
+workflows:
+  version: 2
+  integration:
+    jobs:
+      - build_and_test
+      - brakeman:
+          requires:
+            - build_and_test
+      - fasterer:
+          requires:
+            - build_and_test
+      - lol_dba:
+          requires:
+            - build_and_test
+      - rails_best_practices:
+          requires:
+            - build_and_test
+      - rubocop:
+          requires:
+            - build_and_test

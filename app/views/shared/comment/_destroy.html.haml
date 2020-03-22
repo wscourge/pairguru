@@ -1,0 +1,14 @@
+.panel-heading
+  %h4.panel-title
+    %small
+      = comment.created_at.strftime("%B %d, %Y %H:%m")
+    %small.glyphicon.glyphicon-time
+    = form_with(url: comments_path,
+                method: :delete,
+                id: "comment-delete-form-#{comment.movie_id}-#{comment.user_id}",
+                class: "form-inline pull-right",
+                data: { remote: true }) do |form|
+      = form.hidden_field(:movie_id, value: comment.movie_id)
+      = form.button(type: :submit, class: "btn btn-danger btn-xs", data: { "disable-with": "Deleting...", confirm: "Are you sure?" }) do
+        Delete
+        %span.glyphicon.glyphicon-remove

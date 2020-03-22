@@ -1,0 +1,5 @@
+var selectorPostfix = "<%= @comment.movie.id %>-<%= @comment.user.id %>";
+var $deletePanel = $("#comment-panel-" + selectorPostfix);
+var $createPanel = $("#create-panel-" + selectorPostfix);
+$("<%= escape_javascript(render "shared/comment/new", movie: @comment.movie, user: @comment.user) %>").prependTo($createPanel);
+$deletePanel.children().remove();
